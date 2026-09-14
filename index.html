@@ -60,6 +60,11 @@
 
   .intro{color:var(--text-muted); margin-bottom:18px; font-size:.95rem;}
 
+  .qmode{display:inline-flex; gap:2px; margin-bottom:18px; padding:3px; background:var(--surface-2); border-radius:9px; border:1px solid var(--border);}
+  .qmode-btn{font:inherit; font-family:'PT Sans', sans-serif; font-weight:700; font-size:.85rem; padding:7px 14px; border:none; border-radius:6px; background:transparent; color:var(--text-muted); cursor:pointer;}
+  .qmode-btn[aria-checked="true"]{background:var(--surface); color:var(--accent); box-shadow:var(--shadow);}
+  .qmode-btn:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+
   /* ---- Вопросы ---- */
   .qgroup{margin-bottom:26px;}
   .qgroup > h2{font-size:1.15rem; border-bottom:1px solid var(--border); padding-bottom:8px;}
@@ -75,6 +80,11 @@
   details.q .a li{margin-bottom:.3em;}
   details.q .a li::marker{color:var(--accent);}
   details.q .a strong{color:var(--accent-2);}
+  .a-photo{padding-top:2px;}
+  .a-photo::before{content:"Страница конспекта целиком — нажми на фото, чтобы увеличить"; display:block; font-size:.8rem; color:var(--text-muted); margin-bottom:8px;}
+  .a-photo img{max-width:100%; border-radius:8px; border:1px solid var(--border); display:block; cursor:zoom-in;}
+  #panel-q.mode-photo .a-short{display:none;}
+  #panel-q:not(.mode-photo) .a-photo{display:none;}
 
   /* ---- Препараты (ТЭМ / цветные) ---- */
   .prep-grid{display:flex; flex-direction:column; gap:18px;}
@@ -85,7 +95,24 @@
   }
   @media (max-width:600px){ .prep-card{grid-template-columns:1fr;} }
   .prep-img{background:var(--surface-2); display:flex; align-items:center; justify-content:center; padding:10px;}
-  .prep-img img{max-width:100%; max-height:320px; border-radius:6px; display:block;}
+  .prep-img img{max-width:100%; max-height:320px; border-radius:6px; display:block; cursor:zoom-in;}
+
+  .lightbox{position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; background:rgba(10,8,14,.82); padding:24px;}
+  .lightbox[hidden]{display:none;}
+  .lightbox-stage{position:relative; width:min(92vw, 900px); height:50vh; max-height:80vh; background:var(--surface); border-radius:10px; box-shadow:var(--shadow); overflow:hidden; display:flex; align-items:center; justify-content:center; touch-action:none;}
+  .lightbox-stage.is-tall{height:80vh;}
+  .lightbox-stage img{max-width:none; max-height:none; will-change:transform; user-select:none; -webkit-user-drag:none;}
+  .lightbox-stage.grabbing img{cursor:grabbing;}
+  .lightbox-stage:not(.grabbing) img{cursor:grab;}
+  .lightbox-bar{position:absolute; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; background:linear-gradient(transparent, rgba(0,0,0,.55)); }
+  .lightbox-bar button{font:inherit; font-family:'PT Mono', monospace; font-size:.85rem; font-weight:700; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#fff; border-radius:6px; width:34px; height:30px; cursor:pointer; line-height:1;}
+  .lightbox-bar button:hover{background:rgba(255,255,255,.2);}
+  .lightbox-bar .lightbox-zoom-label{font-family:'PT Mono', monospace; font-size:.8rem; color:#fff; min-width:3.6em; text-align:center;}
+  .lightbox-bar input[type=range]{width:120px;}
+  .lightbox-close{position:absolute; top:10px; right:10px; z-index:2; width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,.35); background:rgba(0,0,0,.35); color:#fff; font-size:1.1rem; line-height:1; cursor:pointer;}
+  .lightbox-close:hover{background:rgba(0,0,0,.55);}
+  .lightbox-size-toggle{position:absolute; top:10px; left:10px; z-index:2; font-family:'PT Mono', monospace; font-size:.78rem; font-weight:700; border:1px solid rgba(255,255,255,.35); background:rgba(0,0,0,.35); color:#fff; border-radius:6px; padding:6px 10px; cursor:pointer;}
+  .lightbox-size-toggle:hover{background:rgba(0,0,0,.55);}
   .prep-body{padding:16px 18px;}
   .prep-title{font-family:'PT Serif', serif; font-size:1.1rem; margin-bottom:2px;}
   .prep-meta{font-family:'PT Mono', monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--accent); margin-bottom:10px;}
@@ -118,11 +145,17 @@
     <section class="panel" id="panel-q" role="tabpanel">
       <p class="intro">20 теоретических вопросов — по одному на каждую страницу конспекта (текстовые фото, без картинок препаратов). Открывай вопрос → проговори ответ вслух → сверься.</p>
 
+      <div class="qmode" role="radiogroup" aria-label="Вид ответа">
+        <button type="button" class="qmode-btn" data-mode="short" role="radio" aria-checked="true">Кратко</button>
+        <button type="button" class="qmode-btn" data-mode="photo" role="radio" aria-checked="false">Конспект (фото)</button>
+      </div>
+
       <div class="qgroup">
         <h2>Эндокринная система</h2>
 
         <details class="q"><summary><span class="qnum">1.</span> Как устроена эндокринная система в целом? Что такое гормон?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p><strong>Гормон</strong> — биологически активное вещество, действующее на клетки-мишени со специфическими (мембранными или ядерными) рецепторами.</p>
             <ul>
               <li>Центральные звенья: гипоталамус, гипофиз, эпифиз.</li>
@@ -131,19 +164,29 @@
               <li>Смешанной секреции: поджелудочная железа, половые железы, плацента.</li>
             </ul>
             <p>Гипоталамус — высший нейроэндокринный центр: нервные импульсы → секреция либеринов/статинов → регуляция гипофиза → периферические железы.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.32.jpeg" alt="Конспект — вопрос 1" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">2.</span> Строение и функция гипоталамуса как эндокринного центра?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p><strong>Крупноклеточные ядра</strong> (супраоптическое, паравентрикулярное) — секретируют вазопрессин и окситоцин, аксоны идут прямо в заднюю долю гипофиза (нейрогипофиз) — это гипоталамо-нейрогипофизарная система.</p>
             <p><strong>Мелкоклеточные ядра</strong> (аркуатное и др.) — секретируют либерины и статины, аксоны идут в срединное возвышение → портальная система → передняя доля гипофиза — гипоталамо-аденогипофизарная система.</p>
             <p>Регуляция гипоталамуса: нервная (лимбическая система, ретикулярная формация, кора) и эндокринная (обратная связь от гормонов гипофиза и периферии).</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.36.jpeg" alt="Конспект — вопрос 2" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">3.</span> Общая характеристика гипофиза и клеточный состав передней доли?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Расположен в турецком седле. Аденогипофиз (из эктодермы ротовой бухты — карман Ратке) + нейрогипофиз (из выпячивания промежуточного мозга).</p>
             <p>Три типа аденоцитов по окраске:</p>
             <ul>
@@ -151,47 +194,72 @@
               <li><strong>Базофильные</strong> — синие (основные красители), напр. тиротропоциты, гонадотропоциты.</li>
               <li><strong>Ацидофильные</strong> — розовые (кислые красители), напр. соматотропоциты.</li>
             </ul>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.38.jpeg" alt="Конспект — вопрос 3" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">4.</span> Как гипофиз связан с гипоталамусом (кровоснабжение, тракт) и что представляет собой эпифиз?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p><strong>Портальная система</strong>: верхние гипофизарные артерии → первичное капиллярное сплетение в срединном возвышении → портальные вены → вторичное сплетение в передней доле — так либерины/статины достигают аденоцитов. Нижние артерии питают заднюю долю напрямую. Гипоталамо-гипофизарный тракт — пучок аксонов из гипоталамуса в заднюю долю.</p>
             <p>Средняя доля — базофильные меланотропоциты → МСГ (пигментация). Нейрогипофиз — нервная ткань + питуициты (глия), хранит и выделяет АДГ и окситоцин, но сам их не синтезирует.</p>
             <p><strong>Эпифиз</strong> — высший нейроэндокринный орган. Дольки из пинеалоцитов (мелатонин — циркадные ритмы, тормозит половое созревание) и глии. «Мозговой песок» — возрастные кальцификаты.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.39.jpeg" alt="Конспект — вопрос 4" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">5.</span> Общая характеристика и строение щитовидной железы (фолликул, коллоид)?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Регулирует основной обмен, теплопродукцию, развитие ЦНС (Т3/Т4) и кальциевый обмен (кальцитонин). Тироциты — из энтодермы; С-клетки — из нейроэктодермы.</p>
             <p><strong>Фолликул</strong> — структурно-функциональная единица: один слой тироцитов вокруг коллоида. <strong>Коллоид</strong> — 80–90% тиреоглобулин (белок-предшественник гормонов) + йод.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.40.jpeg" alt="Конспект — вопрос 5" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">6.</span> Как меняется щитовидная железа при разной функциональной активности?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Секреторный цикл: <strong>продуктивная фаза</strong> (синтез тиреоглобулина, выделение в коллоид) → <strong>экскреторная фаза</strong> (эндоцитоз коллоида, расщепление, выброс Т3/Т4 в кровь).</p>
             <ul>
               <li>Высокая активность: тироциты высокие призматические, коллоид жидкий с резорбционными вакуолями («пенистый»), много эндоцитозных пузырьков.</li>
               <li>Низкая активность: тироциты плоские, коллоид густой, вакуолей нет.</li>
             </ul>
             <p>Парафолликулярные С-клетки → кальцитонин (снижает Ca, антагонист паратгормона).</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.41.jpeg" alt="Конспект — вопрос 6" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">7.</span> Общая характеристика и клеточный состав околощитовидных желёз?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Обычно 4 железы (2 пары), из энтодермы III и IV глоточных карманов. Регулируют кальциево-фосфорный обмен.</p>
             <ul>
               <li><strong>Главные клетки</strong> — светлые (активные) / тёмные (покоящиеся) — секретируют паратгормон.</li>
               <li><strong>Оксифильные клетки</strong> — крупнее, появляются после 7–10 лет, функция неизвестна.</li>
             </ul>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.43.jpeg" alt="Конспект — вопрос 7" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">8.</span> Механизм действия паратгормона и регуляция его секреции?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Паратгормон <strong>повышает Ca²⁺</strong> в крови тремя путями:</p>
             <ul>
               <li>активирует остеокласты (выход Ca из кости);</li>
@@ -199,11 +267,16 @@
               <li>стимулирует образование активной формы витамина D (усиливает всасывание Ca в кишечнике).</li>
             </ul>
             <p>Регуляция — напрямую по уровню Ca²⁺ в крови (без участия гипофиза): низкий Ca стимулирует секрецию, высокий — подавляет. С возрастом растёт число оксифильных клеток и жировой ткани, число главных клеток снижается.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.44.jpeg" alt="Конспект — вопрос 8" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">9.</span> Строение и зоны коры надпочечника, их гормоны?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Кора — из целомического эпителия (мезодерма), 80% среза. Три зоны (снаружи внутрь):</p>
             <ul>
               <li><strong>Клубочковая</strong> — мелкие клетки-«клубочки» → альдостерон (Na/вода).</li>
@@ -211,11 +284,16 @@
               <li><strong>Сетчатая</strong> — анастомозирующие тяжи → андрогены.</li>
             </ul>
             <p>Фетальная кора у плода — до 80% железы, синтезирует эстрогены/прогестерон, атрофируется после рождения.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.45.jpeg" alt="Конспект — вопрос 9" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">10.</span> Мозговое вещество надпочечника и роль коры в стрессе (по Селье)?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Мозговое вещество (из нервного гребня) — хромаффинные клетки → адреналин (80–90%) и норадреналин (10–20%), реакция «бей или беги».</p>
             <p>Три стадии общего адаптационного синдрома:</p>
             <ul>
@@ -223,14 +301,23 @@
               <li><strong>Резистентность</strong> — высокий кортизол перестраивает обмен, подавляет иммунитет и воспаление.</li>
               <li><strong>Истощение</strong> — кора истощается, кортизол падает.</li>
             </ul>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.46.jpeg" alt="Конспект — вопрос 10" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">11.</span> Что такое диффузная эндокринная система (ДЭС / АПУД)?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Одиночные гормонпродуцирующие клетки в стенках обычных органов (ЖКТ, лёгкие, кожа, почки), а не в отдельной железе. Источники развития — разные зародышевые листки (эктодерма/нервный гребень, энтодерма, мезодерма).</p>
             <p><strong>Нейроэндокринные клетки</strong> — сочетают свойства нейрона и эндокриноцита (пример — хромаффинные клетки надпочечника).</p>
             <p><strong>АПУД</strong> (Amine Precursor Uptake and Decarboxylation) — устаревшее название: клетки захватывают предшественники аминов и превращают их в активные амины. Устарело, т.к. раньше ошибочно считали все эти клетки нервного происхождения.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.47.jpeg" alt="Конспект — вопрос 11" loading="lazy">
+            </div>
           </div>
         </details>
       </div>
@@ -240,30 +327,46 @@
 
         <details class="q"><summary><span class="qnum">12.</span> Общий план строения стенки сосуда и от чего он зависит?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Развиваются из мезенхимы. Три оболочки: <strong>интима</strong> (эндотелий + подэндотелиальный слой), <strong>медиа</strong> (гладкие миоциты + волокна), <strong>адвентиция</strong> (рыхлая соединительная ткань, сосуды сосудов, нервы).</p>
             <p>Чем выше давление и скорость кровотока — тем толще медиа и больше в ней эластики/миоцитов. Регуляция: нервная (симпатика сужает) и гуморальная (адреналин, ангиотензин — сужают; гистамин, брадикинин — расширяют).</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.48.jpeg" alt="Конспект — вопрос 12" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">13.</span> Классификация артерий по строению стенки?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <ul>
               <li><strong>Эластического типа</strong> (аорта, лёгочная артерия) — много эластических мембран в медии, сглаживают перепады давления.</li>
               <li><strong>Мышечно-эластического типа</strong> (сонная, подключичная) — миоцитов и эластики поровну, перераспределение крови.</li>
               <li><strong>Мышечного типа</strong> (артерии конечностей, органов) — много слоёв миоцитов, активная регуляция кровотока.</li>
             </ul>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.49.jpeg" alt="Конспект — вопрос 13" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">14.</span> Микроциркуляторное русло: артериолы и их роль?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Порядок: артериола → прекапиллярная артериола → капилляр → посткапиллярная венула → венула.</p>
             <p><strong>Артериола</strong> — эндотелий + 1–2 слоя циркулярных миоцитов — главный регулятор периферического сопротивления и давления. <strong>Эндотелио-миоцитные контакты</strong> передают сигналы от эндотелия к миоцитам (вазодилатация/вазоконстрикция) — основа местной регуляции кровотока.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.50.jpeg" alt="Конспект — вопрос 14" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">15.</span> Капилляры и анастомозы — классификация?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Стенка капилляра — эндотелий на базальной мембране + перициты снаружи. Три типа:</p>
             <ul>
               <li><strong>Сплошные</strong> (соматические) — мышцы, лёгкие, мозг.</li>
@@ -271,11 +374,16 @@
               <li><strong>Прерывистые</strong> (синусоидные) — печень, селезёнка, костный мозг.</li>
             </ul>
             <p><strong>Венула</strong> — шире капилляра, без сплошного слоя миоцитов; место выхода лейкоцитов, роль в воспалении. <strong>Анастомозы</strong>: простые (трубка-сфинктер) и сложные-гломусы (извитой шунт с барорецепторами) — прямой сброс крови из артериолы в венулу, минуя капилляры.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.51.jpeg" alt="Конспект — вопрос 15" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">16.</span> Классификация вен по развитию мышечных элементов, клапаны?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <ul>
               <li><strong>Безмышечные</strong> — вены мозга, костей, селезёнки, сетчатки.</li>
               <li><strong>Мышечные, слабое развитие</strong> — лицо, шея.</li>
@@ -283,44 +391,68 @@
               <li><strong>Мышечные, сильное развитие</strong> — ноги, нижняя полая вена.</li>
             </ul>
             <p><strong>Клапан</strong> — складка интимы, свободный край направлен по току крови (к сердцу).</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.52.jpeg" alt="Конспект — вопрос 16" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">17.</span> Строение лимфатических сосудов?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <ul>
               <li><strong>Лимфокапилляры</strong> — начинаются слепо, прерывистая базальная мембрана, якорные филаменты (фиксация к тканям); собирают лимфу и белки.</li>
               <li><strong>Собирательные сосуды</strong> — 3 тонкие оболочки, много клапанов.</li>
               <li><strong>Стволы и протоки</strong> (грудной проток) — толще, есть гладкие миоциты, проталкивающие лимфу.</li>
             </ul>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.54.jpeg" alt="Конспект — вопрос 17" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">18.</span> Общая характеристика сердца, три оболочки?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Источник развития — мезодерма (висцеральный листок спланхнотома). Функция — насос.</p>
             <ul>
               <li><strong>Эндокард</strong> — внутренняя, аналог интимы сосуда.</li>
               <li><strong>Миокард</strong> — средняя, сердечная мышечная ткань.</li>
               <li><strong>Эпикард</strong> — наружная, = висцеральный листок перикарда.</li>
             </ul>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.55.jpeg" alt="Конспект — вопрос 18" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">19.</span> Строение эндокарда, клапанов, сосудов и иннервация сердца?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p><strong>Эндокард</strong> — 4 слоя (как артерия): эндотелий → подэндотелиальный слой → мышечно-эластический слой → наружный соединительнотканный слой (≈ адвентиция). <strong>Клапаны</strong> — складки эндокарда с соединительной тканью внутри.</p>
             <p>Внутриорганные сосуды: коронарные артерии → артериолы → капилляры (сплошного типа) → венулы → вены сердца.</p>
             <p><strong>Иннервация</strong>: симпатика — учащает/усиливает; парасимпатика (блуждающий нерв) — замедляет/ослабляет; афферентные волокна — боль, давление.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.56.jpeg" alt="Конспект — вопрос 19" loading="lazy">
+            </div>
           </div>
         </details>
 
         <details class="q"><summary><span class="qnum">20.</span> Миокард, проводящая система, перикард, возрастные изменения сердца?</summary>
           <div class="a">
+            <div class="a-view a-short">
             <p>Три типа кардиомиоцитов: сократительные (насос), проводящие/атипичные (импульс), секреторные предсердные (натрийуретический пептид). <strong>Вставочные диски</strong> — десмосомы + fascia adherens + нексусы (электрическая связь).</p>
             <p><strong>Проводящая система</strong>: синусно-предсердный узел → предсердно-желудочковый узел → пучок Гиса → волокна Пуркинье (субэндокардиально в желудочках). Атипичные кардиомиоциты крупнее, светлее, меньше миофибрилл — быстрее проводят импульс.</p>
             <p><strong>Перикард</strong>: висцеральный листок (=эпикард) + париетальный листок, между ними полость с серозной жидкостью.</p>
             <p><strong>Возраст</strong>: гипертрофия кардиомиоцитов, потеря способности к делению, липофусцин, фиброз, снижение эластичности клапанов.</p>
+            </div>
+            <div class="a-view a-photo">
+              <img class="zoomable" src="photo_2026-09-15%2000.18.58.jpeg" alt="Конспект — вопрос 20" loading="lazy">
+            </div>
           </div>
         </details>
       </div>
@@ -647,6 +779,21 @@
   <footer>Собрано из твоих 42 фото конспекта и атласа · открывай этот файл прямо из папки «гиста» — картинки подгружаются из неё же.</footer>
 </div>
 
+<div class="lightbox" id="lightbox" hidden>
+  <div class="lightbox-stage" id="lightboxStage">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Закрыть" title="Закрыть (Esc)">✕</button>
+    <button class="lightbox-size-toggle" id="lightboxSizeToggle" title="Переключить размер окна">на весь экран</button>
+    <img id="lightboxImg" src="" alt="">
+    <div class="lightbox-bar">
+      <button id="lightboxZoomOut" aria-label="Уменьшить" title="Уменьшить">−</button>
+      <input type="range" id="lightboxZoomRange" min="20" max="400" step="1" value="100">
+      <button id="lightboxZoomIn" aria-label="Увеличить" title="Увеличить">+</button>
+      <span class="lightbox-zoom-label" id="lightboxZoomLabel">100%</span>
+      <button id="lightboxZoomReset" title="Сбросить масштаб">1:1</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -660,6 +807,144 @@
       window.scrollTo({top:0, behavior:'instant'});
     });
   });
+
+  // ---- Лайтбокс с зумом ----
+  var lightbox = document.getElementById('lightbox');
+  var stage = document.getElementById('lightboxStage');
+  var lbImg = document.getElementById('lightboxImg');
+  var zoomRange = document.getElementById('lightboxZoomRange');
+  var zoomLabel = document.getElementById('lightboxZoomLabel');
+  var sizeToggle = document.getElementById('lightboxSizeToggle');
+
+  var scale = 1, panX = 0, panY = 0, naturalFitScale = 1;
+  var dragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
+
+  function applyTransform(){
+    lbImg.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + scale + ')';
+    var pct = Math.round((scale / naturalFitScale) * 100);
+    zoomLabel.textContent = pct + '%';
+    zoomRange.value = Math.max(20, Math.min(400, pct));
+  }
+
+  function clampPan(){
+    var stageRect = stage.getBoundingClientRect();
+    var w = lbImg.naturalWidth * scale, h = lbImg.naturalHeight * scale;
+    var maxX = Math.max(0, (w - stageRect.width) / 2);
+    var maxY = Math.max(0, (h - stageRect.height) / 2);
+    panX = Math.max(-maxX, Math.min(maxX, panX));
+    panY = Math.max(-maxY, Math.min(maxY, panY));
+  }
+
+  function setScale(newScale, cx, cy){
+    var stageRect = stage.getBoundingClientRect();
+    if(cx === undefined){ cx = stageRect.width / 2; cy = stageRect.height / 2; }
+    var prevScale = scale;
+    newScale = Math.max(naturalFitScale * 0.2, Math.min(naturalFitScale * 4, newScale));
+    var ratio = newScale / prevScale;
+    panX = (panX - (cx - stageRect.width / 2)) * ratio + (cx - stageRect.width / 2);
+    panY = (panY - (cy - stageRect.height / 2)) * ratio + (cy - stageRect.height / 2);
+    scale = newScale;
+    clampPan();
+    applyTransform();
+  }
+
+  function fitToStage(){
+    var stageRect = stage.getBoundingClientRect();
+    var fw = stageRect.width / lbImg.naturalWidth;
+    var fh = stageRect.height / lbImg.naturalHeight;
+    naturalFitScale = Math.min(fw, fh, 1);
+    scale = naturalFitScale;
+    panX = 0; panY = 0;
+    applyTransform();
+  }
+
+  function openLightbox(src, alt){
+    lbImg.src = src;
+    lbImg.alt = alt || '';
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lbImg.onload = fitToStage;
+    if(lbImg.complete) fitToStage();
+  }
+
+  function closeLightbox(){
+    lightbox.hidden = true;
+    lbImg.src = '';
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.prep-img img, .a-photo img.zoomable').forEach(function(img){
+    img.addEventListener('click', function(){ openLightbox(img.src, img.alt); });
+  });
+
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', function(e){
+    if(lightbox.hidden) return;
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === '+' || e.key === '=') setScale(scale * 1.2);
+    if(e.key === '-') setScale(scale / 1.2);
+  });
+
+  sizeToggle.addEventListener('click', function(){
+    stage.classList.toggle('is-tall');
+    sizeToggle.textContent = stage.classList.contains('is-tall') ? 'пол-окна' : 'на весь экран';
+    fitToStage();
+  });
+
+  document.getElementById('lightboxZoomIn').addEventListener('click', function(){ setScale(scale * 1.25); });
+  document.getElementById('lightboxZoomOut').addEventListener('click', function(){ setScale(scale / 1.25); });
+  document.getElementById('lightboxZoomReset').addEventListener('click', fitToStage);
+  zoomRange.addEventListener('input', function(){
+    setScale(naturalFitScale * (zoomRange.value / 100));
+  });
+
+  stage.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var rect = stage.getBoundingClientRect();
+    var cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+    setScale(scale * (e.deltaY < 0 ? 1.12 : 1/1.12), cx, cy);
+  }, {passive:false});
+
+  stage.addEventListener('pointerdown', function(e){
+    if(e.target.closest('button, input')) return;
+    dragging = true;
+    stage.classList.add('grabbing');
+    dragStartX = e.clientX; dragStartY = e.clientY;
+    panStartX = panX; panStartY = panY;
+    stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    panX = panStartX + (e.clientX - dragStartX);
+    panY = panStartY + (e.clientY - dragStartY);
+    clampPan();
+    applyTransform();
+  });
+  ['pointerup','pointercancel'].forEach(function(ev){
+    stage.addEventListener(ev, function(){ dragging = false; stage.classList.remove('grabbing'); });
+  });
+
+  window.addEventListener('resize', function(){ if(!lightbox.hidden) fitToStage(); });
+
+  // ---- Переключатель "Кратко / Конспект (фото)" ----
+  var qmodeBtns = document.querySelectorAll('.qmode-btn');
+  var panelQ = document.getElementById('panel-q');
+  var QMODE_KEY = 'gista-qmode';
+
+  function setQMode(mode){
+    panelQ.classList.toggle('mode-photo', mode === 'photo');
+    qmodeBtns.forEach(function(b){ b.setAttribute('aria-checked', String(b.dataset.mode === mode)); });
+    try{ localStorage.setItem(QMODE_KEY, mode); }catch(e){}
+  }
+
+  qmodeBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){ setQMode(btn.dataset.mode); });
+  });
+
+  var savedMode = 'short';
+  try{ savedMode = localStorage.getItem(QMODE_KEY) || 'short'; }catch(e){}
+  setQMode(savedMode);
 })();
 </script>
 </body>
