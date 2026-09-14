@@ -45,9 +45,6 @@
   header.top{position:sticky; top:0; z-index:10; background:var(--bg); padding-top:18px; border-bottom:1px solid var(--border);}
   .title-row{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   h1{font-size:1.4rem;}
-  .exam-chip{font-family:'PT Mono', monospace; font-size:.78rem; color:var(--text-muted); white-space:nowrap;}
-  .exam-chip b{color:var(--accent-2);}
-  #countdown{font-family:'PT Mono', monospace; font-variant-numeric:tabular-nums; color:var(--accent-2); font-weight:700;}
 
   nav.tabs{display:flex; gap:6px; margin:14px 0 0; overflow-x:auto;}
   nav.tabs button{
@@ -108,7 +105,6 @@
   <header class="top">
     <div class="title-row">
       <h1>Гиста: вопросы, ТЭМ, препараты</h1>
-      <div class="exam-chip">Контрольная <b>15.09, 16:30</b> · до неё <span id="countdown">—</span></div>
     </div>
     <nav class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="q">Вопросы</button>
@@ -664,18 +660,6 @@
       window.scrollTo({top:0, behavior:'instant'});
     });
   });
-
-  var examTarget = new Date('2026-09-15T16:30:00+03:00');
-  var cd = document.getElementById('countdown');
-  function tick(){
-    var diff = examTarget - new Date();
-    if(diff <= 0){ cd.textContent = 'уже пора'; return; }
-    var h = Math.floor(diff / 3600000);
-    var m = Math.floor((diff % 3600000) / 60000);
-    cd.textContent = h + ' ч ' + (m < 10 ? '0' : '') + m + ' мин';
-  }
-  tick();
-  setInterval(tick, 30000);
 })();
 </script>
 </body>
