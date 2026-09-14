@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Гиста — вопросы, ТЭМ и препараты</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap');
+
+  :root{
+    --bg:#FAF6F3; --surface:#FFFFFF; --surface-2:#F1E9EF; --border:#E3D9E2;
+    --text:#241C2E; --text-muted:#6E6478;
+    --accent:#6C4B9E; --accent-soft:#EEE6F6;
+    --accent-2:#C4577A; --accent-2-soft:#FBE7ED;
+    --shadow: 0 1px 2px rgba(36,28,46,.06), 0 6px 20px -8px rgba(36,28,46,.15);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#18141F; --surface:#221C2C; --surface-2:#2B2336; --border:#3B3147;
+      --text:#F0EAF6; --text-muted:#B2A6C2;
+      --accent:#B49AE0; --accent-soft:#332A46;
+      --accent-2:#EB93AC; --accent-2-soft:#3B2632;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -10px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#18141F; --surface:#221C2C; --surface-2:#2B2336; --border:#3B3147;
+    --text:#F0EAF6; --text-muted:#B2A6C2;
+    --accent:#B49AE0; --accent-soft:#332A46;
+    --accent-2:#EB93AC; --accent-2-soft:#3B2632;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -10px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  html{background:var(--bg);}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'PT Sans', 'Segoe UI', Arial, sans-serif;
+    margin:0; padding:0 16px 72px; line-height:1.55;
+  }
+  .wrap{max-width:840px; margin:0 auto;}
+  h1,h2,h3{font-family:'PT Serif', Georgia, serif; text-wrap:balance; margin:0 0 .3em;}
+  a{color:var(--accent);}
+
+  header.top{position:sticky; top:0; z-index:10; background:var(--bg); padding-top:18px; border-bottom:1px solid var(--border);}
+  .title-row{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  h1{font-size:1.4rem;}
+  .exam-chip{font-family:'PT Mono', monospace; font-size:.78rem; color:var(--text-muted); white-space:nowrap;}
+  .exam-chip b{color:var(--accent-2);}
+  #countdown{font-family:'PT Mono', monospace; font-variant-numeric:tabular-nums; color:var(--accent-2); font-weight:700;}
+
+  nav.tabs{display:flex; gap:6px; margin:14px 0 0; overflow-x:auto;}
+  nav.tabs button{
+    font:inherit; font-family:'PT Sans', sans-serif; font-weight:700; font-size:.95rem;
+    background:none; border:none; cursor:pointer; padding:10px 6px 12px;
+    color:var(--text-muted); border-bottom:2px solid transparent; white-space:nowrap;
+  }
+  nav.tabs button[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--accent);}
+  nav.tabs button:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px;}
+
+  main{padding-top:22px;}
+  section.panel[hidden]{display:none;}
+
+  .intro{color:var(--text-muted); margin-bottom:18px; font-size:.95rem;}
+
+  /* ---- Вопросы ---- */
+  .qgroup{margin-bottom:26px;}
+  .qgroup > h2{font-size:1.15rem; border-bottom:1px solid var(--border); padding-bottom:8px;}
+  details.q{background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; box-shadow:var(--shadow);}
+  details.q summary{
+    cursor:pointer; padding:13px 16px; font-weight:700; font-family:'PT Serif', serif;
+    list-style:none; display:flex; gap:10px; align-items:baseline;
+  }
+  details.q summary::-webkit-details-marker{display:none;}
+  .qnum{font-family:'PT Mono', monospace; color:var(--accent); font-weight:700; flex:none;}
+  details.q .a{padding:0 16px 16px 42px; color:var(--text);}
+  details.q .a ul{margin:.3em 0; padding-left:1.2em;}
+  details.q .a li{margin-bottom:.3em;}
+  details.q .a li::marker{color:var(--accent);}
+  details.q .a strong{color:var(--accent-2);}
+
+  /* ---- Препараты (ТЭМ / цветные) ---- */
+  .prep-grid{display:flex; flex-direction:column; gap:18px;}
+  .prep-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    box-shadow:var(--shadow); overflow:hidden;
+    display:grid; grid-template-columns: 230px 1fr; gap:0;
+  }
+  @media (max-width:600px){ .prep-card{grid-template-columns:1fr;} }
+  .prep-img{background:var(--surface-2); display:flex; align-items:center; justify-content:center; padding:10px;}
+  .prep-img img{max-width:100%; max-height:320px; border-radius:6px; display:block;}
+  .prep-body{padding:16px 18px;}
+  .prep-title{font-family:'PT Serif', serif; font-size:1.1rem; margin-bottom:2px;}
+  .prep-meta{font-family:'PT Mono', monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--accent); margin-bottom:10px;}
+  .prep-meta.tem{color:var(--accent-2);}
+  .prep-legend{font-size:.92rem; margin:0 0 10px; padding-left:1.1em;}
+  .prep-legend li{margin-bottom:.25em;}
+  .prep-legend li::marker{color:var(--accent);}
+  .prep-note{font-size:.92rem; color:var(--text-muted); border-top:1px dashed var(--border); padding-top:10px;}
+  .prep-note b{color:var(--text);}
+  .src{font-size:.76rem; color:var(--text-muted); font-style:italic; margin-top:6px;}
+
+  footer{margin-top:40px; padding-top:16px; border-top:1px solid var(--border); color:var(--text-muted); font-size:.82rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="title-row">
+      <h1>Гиста: вопросы, ТЭМ, препараты</h1>
+      <div class="exam-chip">Контрольная <b>15.09, 16:30</b> · до неё <span id="countdown">—</span></div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="q">Вопросы</button>
+      <button role="tab" aria-selected="false" data-tab="tem">ТЭМ (7)</button>
+      <button role="tab" aria-selected="false" data-tab="color">Цветные препараты (16)</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============ ВОПРОСЫ ============ -->
+    <section class="panel" id="panel-q" role="tabpanel">
+      <p class="intro">20 теоретических вопросов — по одному на каждую страницу конспекта (текстовые фото, без картинок препаратов). Открывай вопрос → проговори ответ вслух → сверься.</p>
+
+      <div class="qgroup">
+        <h2>Эндокринная система</h2>
+
+        <details class="q"><summary><span class="qnum">1.</span> Как устроена эндокринная система в целом? Что такое гормон?</summary>
+          <div class="a">
+            <p><strong>Гормон</strong> — биологически активное вещество, действующее на клетки-мишени со специфическими (мембранными или ядерными) рецепторами.</p>
+            <ul>
+              <li>Центральные звенья: гипоталамус, гипофиз, эпифиз.</li>
+              <li>Периферические, зависимые от гипофиза: щитовидная железа, кора надпочечников, половые железы.</li>
+              <li>Периферические, независимые от гипофиза: паращитовидные железы, мозговое вещество надпочечников, ДЭС.</li>
+              <li>Смешанной секреции: поджелудочная железа, половые железы, плацента.</li>
+            </ul>
+            <p>Гипоталамус — высший нейроэндокринный центр: нервные импульсы → секреция либеринов/статинов → регуляция гипофиза → периферические железы.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">2.</span> Строение и функция гипоталамуса как эндокринного центра?</summary>
+          <div class="a">
+            <p><strong>Крупноклеточные ядра</strong> (супраоптическое, паравентрикулярное) — секретируют вазопрессин и окситоцин, аксоны идут прямо в заднюю долю гипофиза (нейрогипофиз) — это гипоталамо-нейрогипофизарная система.</p>
+            <p><strong>Мелкоклеточные ядра</strong> (аркуатное и др.) — секретируют либерины и статины, аксоны идут в срединное возвышение → портальная система → передняя доля гипофиза — гипоталамо-аденогипофизарная система.</p>
+            <p>Регуляция гипоталамуса: нервная (лимбическая система, ретикулярная формация, кора) и эндокринная (обратная связь от гормонов гипофиза и периферии).</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">3.</span> Общая характеристика гипофиза и клеточный состав передней доли?</summary>
+          <div class="a">
+            <p>Расположен в турецком седле. Аденогипофиз (из эктодермы ротовой бухты — карман Ратке) + нейрогипофиз (из выпячивания промежуточного мозга).</p>
+            <p>Три типа аденоцитов по окраске:</p>
+            <ul>
+              <li><strong>Хромофобные</strong> — мелкие, слабоокрашенные, камбиальные/резервные.</li>
+              <li><strong>Базофильные</strong> — синие (основные красители), напр. тиротропоциты, гонадотропоциты.</li>
+              <li><strong>Ацидофильные</strong> — розовые (кислые красители), напр. соматотропоциты.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">4.</span> Как гипофиз связан с гипоталамусом (кровоснабжение, тракт) и что представляет собой эпифиз?</summary>
+          <div class="a">
+            <p><strong>Портальная система</strong>: верхние гипофизарные артерии → первичное капиллярное сплетение в срединном возвышении → портальные вены → вторичное сплетение в передней доле — так либерины/статины достигают аденоцитов. Нижние артерии питают заднюю долю напрямую. Гипоталамо-гипофизарный тракт — пучок аксонов из гипоталамуса в заднюю долю.</p>
+            <p>Средняя доля — базофильные меланотропоциты → МСГ (пигментация). Нейрогипофиз — нервная ткань + питуициты (глия), хранит и выделяет АДГ и окситоцин, но сам их не синтезирует.</p>
+            <p><strong>Эпифиз</strong> — высший нейроэндокринный орган. Дольки из пинеалоцитов (мелатонин — циркадные ритмы, тормозит половое созревание) и глии. «Мозговой песок» — возрастные кальцификаты.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">5.</span> Общая характеристика и строение щитовидной железы (фолликул, коллоид)?</summary>
+          <div class="a">
+            <p>Регулирует основной обмен, теплопродукцию, развитие ЦНС (Т3/Т4) и кальциевый обмен (кальцитонин). Тироциты — из энтодермы; С-клетки — из нейроэктодермы.</p>
+            <p><strong>Фолликул</strong> — структурно-функциональная единица: один слой тироцитов вокруг коллоида. <strong>Коллоид</strong> — 80–90% тиреоглобулин (белок-предшественник гормонов) + йод.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">6.</span> Как меняется щитовидная железа при разной функциональной активности?</summary>
+          <div class="a">
+            <p>Секреторный цикл: <strong>продуктивная фаза</strong> (синтез тиреоглобулина, выделение в коллоид) → <strong>экскреторная фаза</strong> (эндоцитоз коллоида, расщепление, выброс Т3/Т4 в кровь).</p>
+            <ul>
+              <li>Высокая активность: тироциты высокие призматические, коллоид жидкий с резорбционными вакуолями («пенистый»), много эндоцитозных пузырьков.</li>
+              <li>Низкая активность: тироциты плоские, коллоид густой, вакуолей нет.</li>
+            </ul>
+            <p>Парафолликулярные С-клетки → кальцитонин (снижает Ca, антагонист паратгормона).</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">7.</span> Общая характеристика и клеточный состав околощитовидных желёз?</summary>
+          <div class="a">
+            <p>Обычно 4 железы (2 пары), из энтодермы III и IV глоточных карманов. Регулируют кальциево-фосфорный обмен.</p>
+            <ul>
+              <li><strong>Главные клетки</strong> — светлые (активные) / тёмные (покоящиеся) — секретируют паратгормон.</li>
+              <li><strong>Оксифильные клетки</strong> — крупнее, появляются после 7–10 лет, функция неизвестна.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">8.</span> Механизм действия паратгормона и регуляция его секреции?</summary>
+          <div class="a">
+            <p>Паратгормон <strong>повышает Ca²⁺</strong> в крови тремя путями:</p>
+            <ul>
+              <li>активирует остеокласты (выход Ca из кости);</li>
+              <li>усиливает реабсорбцию Ca в почках;</li>
+              <li>стимулирует образование активной формы витамина D (усиливает всасывание Ca в кишечнике).</li>
+            </ul>
+            <p>Регуляция — напрямую по уровню Ca²⁺ в крови (без участия гипофиза): низкий Ca стимулирует секрецию, высокий — подавляет. С возрастом растёт число оксифильных клеток и жировой ткани, число главных клеток снижается.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">9.</span> Строение и зоны коры надпочечника, их гормоны?</summary>
+          <div class="a">
+            <p>Кора — из целомического эпителия (мезодерма), 80% среза. Три зоны (снаружи внутрь):</p>
+            <ul>
+              <li><strong>Клубочковая</strong> — мелкие клетки-«клубочки» → альдостерон (Na/вода).</li>
+              <li><strong>Пучковая</strong> — самая широкая, тяжи клеток → кортизол (обмен, стресс).</li>
+              <li><strong>Сетчатая</strong> — анастомозирующие тяжи → андрогены.</li>
+            </ul>
+            <p>Фетальная кора у плода — до 80% железы, синтезирует эстрогены/прогестерон, атрофируется после рождения.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">10.</span> Мозговое вещество надпочечника и роль коры в стрессе (по Селье)?</summary>
+          <div class="a">
+            <p>Мозговое вещество (из нервного гребня) — хромаффинные клетки → адреналин (80–90%) и норадреналин (10–20%), реакция «бей или беги».</p>
+            <p>Три стадии общего адаптационного синдрома:</p>
+            <ul>
+              <li><strong>Тревога</strong> — выброс кортизола и альдостерона.</li>
+              <li><strong>Резистентность</strong> — высокий кортизол перестраивает обмен, подавляет иммунитет и воспаление.</li>
+              <li><strong>Истощение</strong> — кора истощается, кортизол падает.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">11.</span> Что такое диффузная эндокринная система (ДЭС / АПУД)?</summary>
+          <div class="a">
+            <p>Одиночные гормонпродуцирующие клетки в стенках обычных органов (ЖКТ, лёгкие, кожа, почки), а не в отдельной железе. Источники развития — разные зародышевые листки (эктодерма/нервный гребень, энтодерма, мезодерма).</p>
+            <p><strong>Нейроэндокринные клетки</strong> — сочетают свойства нейрона и эндокриноцита (пример — хромаффинные клетки надпочечника).</p>
+            <p><strong>АПУД</strong> (Amine Precursor Uptake and Decarboxylation) — устаревшее название: клетки захватывают предшественники аминов и превращают их в активные амины. Устарело, т.к. раньше ошибочно считали все эти клетки нервного происхождения.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="qgroup">
+        <h2>Сердечно-сосудистая система</h2>
+
+        <details class="q"><summary><span class="qnum">12.</span> Общий план строения стенки сосуда и от чего он зависит?</summary>
+          <div class="a">
+            <p>Развиваются из мезенхимы. Три оболочки: <strong>интима</strong> (эндотелий + подэндотелиальный слой), <strong>медиа</strong> (гладкие миоциты + волокна), <strong>адвентиция</strong> (рыхлая соединительная ткань, сосуды сосудов, нервы).</p>
+            <p>Чем выше давление и скорость кровотока — тем толще медиа и больше в ней эластики/миоцитов. Регуляция: нервная (симпатика сужает) и гуморальная (адреналин, ангиотензин — сужают; гистамин, брадикинин — расширяют).</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">13.</span> Классификация артерий по строению стенки?</summary>
+          <div class="a">
+            <ul>
+              <li><strong>Эластического типа</strong> (аорта, лёгочная артерия) — много эластических мембран в медии, сглаживают перепады давления.</li>
+              <li><strong>Мышечно-эластического типа</strong> (сонная, подключичная) — миоцитов и эластики поровну, перераспределение крови.</li>
+              <li><strong>Мышечного типа</strong> (артерии конечностей, органов) — много слоёв миоцитов, активная регуляция кровотока.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">14.</span> Микроциркуляторное русло: артериолы и их роль?</summary>
+          <div class="a">
+            <p>Порядок: артериола → прекапиллярная артериола → капилляр → посткапиллярная венула → венула.</p>
+            <p><strong>Артериола</strong> — эндотелий + 1–2 слоя циркулярных миоцитов — главный регулятор периферического сопротивления и давления. <strong>Эндотелио-миоцитные контакты</strong> передают сигналы от эндотелия к миоцитам (вазодилатация/вазоконстрикция) — основа местной регуляции кровотока.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">15.</span> Капилляры и анастомозы — классификация?</summary>
+          <div class="a">
+            <p>Стенка капилляра — эндотелий на базальной мембране + перициты снаружи. Три типа:</p>
+            <ul>
+              <li><strong>Сплошные</strong> (соматические) — мышцы, лёгкие, мозг.</li>
+              <li><strong>Окончатые</strong> (фенестрированные) — почки, кишечник, железы.</li>
+              <li><strong>Прерывистые</strong> (синусоидные) — печень, селезёнка, костный мозг.</li>
+            </ul>
+            <p><strong>Венула</strong> — шире капилляра, без сплошного слоя миоцитов; место выхода лейкоцитов, роль в воспалении. <strong>Анастомозы</strong>: простые (трубка-сфинктер) и сложные-гломусы (извитой шунт с барорецепторами) — прямой сброс крови из артериолы в венулу, минуя капилляры.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">16.</span> Классификация вен по развитию мышечных элементов, клапаны?</summary>
+          <div class="a">
+            <ul>
+              <li><strong>Безмышечные</strong> — вены мозга, костей, селезёнки, сетчатки.</li>
+              <li><strong>Мышечные, слабое развитие</strong> — лицо, шея.</li>
+              <li><strong>Мышечные, среднее развитие</strong> — руки.</li>
+              <li><strong>Мышечные, сильное развитие</strong> — ноги, нижняя полая вена.</li>
+            </ul>
+            <p><strong>Клапан</strong> — складка интимы, свободный край направлен по току крови (к сердцу).</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">17.</span> Строение лимфатических сосудов?</summary>
+          <div class="a">
+            <ul>
+              <li><strong>Лимфокапилляры</strong> — начинаются слепо, прерывистая базальная мембрана, якорные филаменты (фиксация к тканям); собирают лимфу и белки.</li>
+              <li><strong>Собирательные сосуды</strong> — 3 тонкие оболочки, много клапанов.</li>
+              <li><strong>Стволы и протоки</strong> (грудной проток) — толще, есть гладкие миоциты, проталкивающие лимфу.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">18.</span> Общая характеристика сердца, три оболочки?</summary>
+          <div class="a">
+            <p>Источник развития — мезодерма (висцеральный листок спланхнотома). Функция — насос.</p>
+            <ul>
+              <li><strong>Эндокард</strong> — внутренняя, аналог интимы сосуда.</li>
+              <li><strong>Миокард</strong> — средняя, сердечная мышечная ткань.</li>
+              <li><strong>Эпикард</strong> — наружная, = висцеральный листок перикарда.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">19.</span> Строение эндокарда, клапанов, сосудов и иннервация сердца?</summary>
+          <div class="a">
+            <p><strong>Эндокард</strong> — 4 слоя (как артерия): эндотелий → подэндотелиальный слой → мышечно-эластический слой → наружный соединительнотканный слой (≈ адвентиция). <strong>Клапаны</strong> — складки эндокарда с соединительной тканью внутри.</p>
+            <p>Внутриорганные сосуды: коронарные артерии → артериолы → капилляры (сплошного типа) → венулы → вены сердца.</p>
+            <p><strong>Иннервация</strong>: симпатика — учащает/усиливает; парасимпатика (блуждающий нерв) — замедляет/ослабляет; афферентные волокна — боль, давление.</p>
+          </div>
+        </details>
+
+        <details class="q"><summary><span class="qnum">20.</span> Миокард, проводящая система, перикард, возрастные изменения сердца?</summary>
+          <div class="a">
+            <p>Три типа кардиомиоцитов: сократительные (насос), проводящие/атипичные (импульс), секреторные предсердные (натрийуретический пептид). <strong>Вставочные диски</strong> — десмосомы + fascia adherens + нексусы (электрическая связь).</p>
+            <p><strong>Проводящая система</strong>: синусно-предсердный узел → предсердно-желудочковый узел → пучок Гиса → волокна Пуркинье (субэндокардиально в желудочках). Атипичные кардиомиоциты крупнее, светлее, меньше миофибрилл — быстрее проводят импульс.</p>
+            <p><strong>Перикард</strong>: висцеральный листок (=эпикард) + париетальный листок, между ними полость с серозной жидкостью.</p>
+            <p><strong>Возраст</strong>: гипертрофия кардиомиоцитов, потеря способности к делению, липофусцин, фиброз, снижение эластичности клапанов.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============ ТЭМ ============ -->
+    <section class="panel" id="panel-tem" role="tabpanel" hidden>
+      <p class="intro">Электронные микрофотографии — тёмные, зернистые снимки с цифрами-указателями. На контрольной чаще всего просят узнать препарат и назвать то, что под цифрой.</p>
+      <div class="prep-grid">
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.20.jpeg" alt="ТЭМ кровеносного капилляра"></div>
+          <div class="prep-body">
+            <div class="prep-title">Кровеносный капилляр, поперечный срез</div>
+            <div class="prep-meta tem">ТЭМ · ×20 000 · атлас Родина</div>
+            <ol class="prep-legend">
+              <li>Эритроцит в просвете капилляра</li><li>Тромбоцит</li><li>Ядро эндотелиальной клетки</li>
+              <li>Внутриклеточный сетчатый аппарат</li><li>Эндоплазматическая сеть</li><li>Пиноцитозные пузырьки</li>
+              <li>Митохондрии</li><li>Поры в эндотелии</li><li>Базальная мембрана</li><li>Адвентициальная клетка</li>
+            </ol>
+            <div class="prep-note">Самый мелкий сосуд МЦР: 1 слой плоских эндотелиоцитов на базальной мембране, снаружи перициты. Функция — обмен газов и веществ между кровью и тканью.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.22.jpeg" alt="ТЭМ синуса красной пульпы селезёнки"></div>
+          <div class="prep-body">
+            <div class="prep-title">Синус красной пульпы селезёнки</div>
+            <div class="prep-meta tem">ТЭМ (селезёнка крысы) · ×8 000 · по Ю. И. Афанасьеву</div>
+            <ol class="prep-legend">
+              <li>Эритроциты в просвете синуса</li><li>Эритроцит, «пролезающий» сквозь щель стенки синуса</li>
+              <li>Ретикулоэндотелиальная («береговая») клетка</li><li>Прерывистая базальная мембрана</li>
+            </ol>
+            <div class="prep-note">Широкий венозный капилляр неправильной формы; щели между эндотелиоцитами и прерывистая базальная мембрана — механизм «отбраковки» и разрушения старых эритроцитов, а также депонирования крови.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.23.jpeg" alt="ТЭМ главной клетки гипофиза"></div>
+          <div class="prep-body">
+            <div class="prep-title">Гипофиз — главная (хромофобная) клетка передней доли</div>
+            <div class="prep-meta tem">ТЭМ · ×37 500 · К. А. Зуфаров и сотр.</div>
+            <ol class="prep-legend"><li>Ядро</li><li>Митохондрии</li><li>Внутриклеточный сетчатый аппарат (комплекс Гольджи)</li></ol>
+            <div class="prep-note">Мелкая клетка, светлая слабоокрашенная цитоплазма, секреторных гранул почти нет. Резервная/малодифференцированная клетка — источник для ацидофильных и базофильных клеток.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.24.jpeg" alt="ТЭМ базофильной ФСГ-клетки гипофиза"></div>
+          <div class="prep-body">
+            <div class="prep-title">Гипофиз — базофильная ФСГ-клетка (клетка B)</div>
+            <div class="prep-meta tem">ТЭМ (белая крыса) · ×26 000 · по В. С. Стрижкову</div>
+            <ol class="prep-legend">
+              <li>Ядро клетки</li><li>Гранулярная эндоплазматическая сеть (цистерны)</li>
+              <li>Внутриклеточный сетчатый аппарат</li><li>Митохондрии</li><li>Гранулы инкрета</li>
+            </ol>
+            <div class="prep-note">Синтезирует ФСГ: у самок стимулирует рост фолликулов яичника, у самцов — сперматогенез через клетки Сертоли. Хорошо развиты гр. ЭПС и комплекс Гольджи.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.25.jpeg" alt="ТЭМ соматотропной клетки гипофиза"></div>
+          <div class="prep-body">
+            <div class="prep-title">Гипофиз — ацидофильная соматотропная клетка</div>
+            <div class="prep-meta tem">ТЭМ (крыса) · ×20 000 · по В. С. Стрижкову</div>
+            <ol class="prep-legend">
+              <li>Ядро</li><li>Эндоплазматическая сеть</li><li>Комплекс Гольджи</li>
+              <li>Формирующиеся гранулы секрета</li><li>Зрелые гранулы</li><li>Митохондрии</li>
+            </ol>
+            <div class="prep-note">Крупная клетка с многочисленными гранулами СТГ — стимулирует рост костей и мышц, синтез белка.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.26.jpeg" alt="ТЭМ фолликула щитовидной железы при гиперфункции"></div>
+          <div class="prep-body">
+            <div class="prep-title">Щитовидная железа — фолликул при гиперфункции (тиреотоксикоз)</div>
+            <div class="prep-meta tem">ТЭМ · ×12 000 · по М. Б. Джуди</div>
+            <ol class="prep-legend">
+              <li>Коллоид в просвете фолликула</li><li>Коллоидсодержащие тиреоциты</li><li>Десмосомы</li>
+              <li>Коллоид в цитоплазме тиреоцита</li><li>Микроворсинки</li><li>Шаровидные выросты цитоплазмы (= резорбционные вакуоли при световой микроскопии)</li>
+            </ol>
+            <div class="prep-note">Признаки гиперфункции: фолликулы мелкие, эпителий высокий, коллоид жидкий, «пенистый» по краю; усиленное кровоснабжение. Клетки активно расщепляют коллоид и выбрасывают Т3/Т4.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.27.jpeg" alt="ТЭМ вставочных дисков миокарда"></div>
+          <div class="prep-body">
+            <div class="prep-title">Вставочные диски миокарда</div>
+            <div class="prep-meta tem">ТЭМ (морская свинка) · ×31 000 · по Дейвею и Барри</div>
+            <ol class="prep-legend">
+              <li>Базальная оболочка мышечного волокна</li><li>Сарколемма</li><li>Вставочные диски</li>
+              <li>Миофибриллы</li><li>Митохондрии (саркосомы)</li><li>Эндоплазматическая сеть</li>
+            </ol>
+            <div class="prep-note">В диске — десмосомы (механическое сцепление), fascia adherens (крепление миофибрилл) и нексусы/щелевые контакты (электрическая связь) — миокард сокращается как единый функциональный синцитий.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ ЦВЕТНЫЕ ПРЕПАРАТЫ ============ -->
+    <section class="panel" id="panel-color" role="tabpanel" hidden>
+      <p class="intro">Световая микроскопия, окраска гематоксилин-эозином (розово-фиолетовая), кроме мазка костного мозга (по Романовскому).</p>
+      <div class="prep-grid">
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.18.59.jpeg" alt="Волокна Пуркинье"></div>
+          <div class="prep-body">
+            <div class="prep-title">Волокна Пуркинье (сердце)</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Эндокард: эндотелий</li><li>Эндокард: подэндотелиальный слой</li><li>Эндокард: мышечно-эластический слой</li>
+              <li>Эндокард: наружный соединительнотканный слой</li>
+              <li>Миокард: атипичные кардиомиоциты (волокна Пуркинье)</li><li>Миокард: типичные кардиомиоциты</li><li>Миокард: прослойки РВСТ</li>
+            </ol>
+            <div class="prep-note">Волокна Пуркинье лежат субэндокардиально, крупнее и светлее типичных кардиомиоцитов (меньше миофибрилл, больше саркоплазмы) — быстро проводят импульс на желудочки.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.00.jpeg" alt="Артерия эластического типа, аорта"></div>
+          <div class="prep-body">
+            <div class="prep-title">Артерия эластического типа (аорта)</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Внутренняя оболочка (эндотелий + подэндотелиальный слой)</li>
+              <li>Средняя оболочка (окончатые эластические мембраны + миоциты между ними)</li>
+              <li>Наружная оболочка (рыхлая соединительная ткань, сосуды сосудов)</li>
+            </ol>
+            <div class="prep-note">Множество эластических мембран в медии сглаживает перепады давления между систолой и диастолой — главный опознавательный признак эластической артерии.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.01.jpeg" alt="Артериолы, венулы, капилляры"></div>
+          <div class="prep-body">
+            <div class="prep-title">Артериолы, венулы, капилляры (тотальный препарат МЦР)</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Капилляр — эндотелий + перициты, просвет 3–12 мкм</li>
+              <li>Артериола — эндотелий + циркулярные миоциты, 50–100 мкм</li>
+              <li>Венула — шире, без сплошного слоя миоцитов, 30–100 мкм</li>
+              <li>Наружный слой всех микрососудов — перициты и адвентициальные клетки</li>
+            </ol>
+            <div class="prep-note">Главный опознавательный признак: у артериолы есть циркулярный слой гладких миоцитов, у венулы — нет.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.02.jpeg" alt="Миокард сердца"></div>
+          <div class="prep-body">
+            <div class="prep-title">Миокард сердца</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Кардиомиоциты (прямоугольные клетки, ядро в центре)</li>
+              <li>Вставочные диски (тёмные поперечные линии на границах клеток)</li>
+              <li>Прослойки РВСТ с капиллярами между волокнами</li>
+            </ol>
+            <div class="prep-note">Клетки соединены «конец в конец» вставочными дисками — работают как единый функциональный синцитий.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.03.jpeg" alt="Лимфатический узел"></div>
+          <div class="prep-body">
+            <div class="prep-title">Лимфатический узел</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Капсула</li><li>Трабекулы</li>
+              <li>Корковое вещество (А — лимфатический узелок; Б — герминативный центр)</li>
+              <li>Мозговое вещество (В — мозговые тяжи)</li><li>Паракортикальная зона</li><li>Ретикулярная строма</li>
+            </ol>
+            <div class="prep-note">Узелки и мозговые тяжи — В-зона, паракортикальная зона — Т-зона; синусы (краевой, промежуточный, мозговой) — пути тока лимфы. Функция — фильтрация лимфы, иммунный ответ.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.05.jpeg" alt="Нёбная миндалина"></div>
+          <div class="prep-body">
+            <div class="prep-title">Нёбная миндалина</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Крипта (многослойный плоский неороговевающий эпителий)</li>
+              <li>Собственная пластинка с лимфатическими узелками</li>
+              <li>Соединительнотканная капсула</li><li>Сосуды</li>
+            </ol>
+            <div class="prep-note">Эпителий крипт инфильтрирован лимфоцитами и макрофагами, в просвете — слущенные клетки и лейкоциты. Функция — местная иммунная защита.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.06.jpeg" alt="Околощитовидная железа"></div>
+          <div class="prep-body">
+            <div class="prep-title">Околощитовидная железа</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend"><li>Капсула</li><li>Соединительнотканная строма</li><li>Тяжи паратироцитов</li><li>Адипоциты</li></ol>
+            <div class="prep-note">Главные паратироциты (мелкие, преобладают) секретируют паратгормон; оксифильные клетки (крупнее, появляются после 7–10 лет) — функция не установлена.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.07.jpeg" alt="Щитовидная железа"></div>
+          <div class="prep-body">
+            <div class="prep-title">Щитовидная железа</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Капсула</li><li>Фолликул</li><li>Коллоид в просвете фолликула</li>
+              <li>Фолликулярные клетки (тироциты)</li><li>Интерфолликулярные островки</li><li>Кровеносные сосуды</li>
+            </ol>
+            <div class="prep-note">Фолликулы — структурно-функциональная единица, заполнены оксифильным коллоидом; между фолликулами — РВСТ с капиллярами.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.09.jpeg" alt="Гипофиз"></div>
+          <div class="prep-body">
+            <div class="prep-title">Гипофиз</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Передняя доля (аденогипофиз)</li><li>Задняя доля (нейрогипофиз)</li>
+              <li>Синусоидные капилляры</li><li>Промежуточная доля (псевдофолликулы)</li>
+            </ol>
+            <div class="prep-note">Передняя доля — тяжи аденоцитов (ацидофилы/базофилы/хромофобы) среди синусоидных капилляров; задняя доля — нервные волокна + питуициты; промежуточная доля у человека развита слабо.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.10.jpeg" alt="Нижняя полая вена"></div>
+          <div class="prep-body">
+            <div class="prep-title">Нижняя полая вена (сильное развитие мышечных элементов)</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Внутренняя оболочка (эндотелий + РВСТ с единичными продольными миоцитами)</li>
+              <li>Средняя оболочка (циркулярные пучки миоцитов)</li>
+              <li>Наружная оболочка — самая толстая (продольные пучки миоцитов, РВСТ, vasa vasorum)</li>
+            </ol>
+            <div class="prep-note">У крупных вен мощно развита именно наружная оболочка — в отличие от артерий, где доминирует средняя.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.12.jpeg" alt="Бедренная вена"></div>
+          <div class="prep-body">
+            <div class="prep-title">Бедренная вена (вена мышечного типа)</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Внутренняя оболочка + клапан (складка интимы, свободный край — к сердцу)</li>
+              <li>Средняя оболочка (циркулярные миоциты)</li>
+              <li>Наружная оболочка — самая толстая (коллаген, сосуды, жировая ткань)</li>
+            </ol>
+            <div class="prep-note">Клапан — ключевой опознавательный признак вены на препарате.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.13.jpeg" alt="Тимус ребёнка"></div>
+          <div class="prep-body">
+            <div class="prep-title">Тимус ребёнка</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Капсула</li><li>Соединительнотканные перегородки</li><li>Корковое вещество дольки</li>
+              <li>Мозговое вещество дольки</li><li>Тимоциты коркового вещества</li><li>Тельца Гассаля</li>
+            </ol>
+            <div class="prep-note">Тёмная кора (много тимоцитов) снаружи, светлое мозговое вещество внутри с тельцами Гассаля. Функция — созревание Т-лимфоцитов.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.14.jpeg" alt="Бедренная артерия и вена"></div>
+          <div class="prep-body">
+            <div class="prep-title">Бедренная артерия (мышечного типа) и вена слабого развития</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend"><li>Внутренняя оболочка</li><li>Эндотелий</li><li>Средняя оболочка</li><li>Гладкие миоциты</li><li>Наружная оболочка</li></ol>
+            <div class="prep-note">У артерии — толстая циркулярная медия, просвет круглый; рядом видна тонкостенная вена с редкими миоцитами — удобно сравнивать на одном препарате.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.16.jpeg" alt="Мазок красного костного мозга"></div>
+          <div class="prep-body">
+            <div class="prep-title">Мазок красного костного мозга</div>
+            <div class="prep-meta">Окраска по Романовскому</div>
+            <ol class="prep-legend">
+              <li>Гемопоэтический компонент — эритроидные (островки), миелоидные, мегакариоциты, лимфоидные элементы</li>
+              <li>Стромальный компонент — ретикулярные клетки, адипоциты, адвентициальные/эндотелиальные клетки</li>
+              <li>Сосудистый компонент — синусоидные капилляры</li>
+            </ol>
+            <div class="prep-note">Мегакариоциты — самые крупные клетки, от них отшнуровываются тромбоциты. Эритроидные клетки по мере созревания меняют цвет цитоплазмы (база → оксифилия) и теряют ядро.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.18.jpeg" alt="Селезёнка"></div>
+          <div class="prep-body">
+            <div class="prep-title">Селезёнка</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Капсула</li><li>Трабекула</li><li>Лимфатический узелок белой пульпы</li>
+              <li>Артерия лимфатического узелка (центральная, лежит эксцентрично)</li><li>Красная пульпа</li>
+            </ol>
+            <div class="prep-note">Белая пульпа — узелки вокруг центральной артерии; красная — венозные синусы + тяжи Бильрота. Функции — иммунитет, разрушение старых эритроцитов, депонирование крови.</div>
+          </div>
+        </div>
+
+        <div class="prep-card">
+          <div class="prep-img"><img src="photo_2026-09-15%2000.19.19.jpeg" alt="Надпочечник"></div>
+          <div class="prep-body">
+            <div class="prep-title">Надпочечник</div>
+            <div class="prep-meta">Гистопрепарат · Г-Э</div>
+            <ol class="prep-legend">
+              <li>Соединительнотканная капсула</li><li>Клубочковая зона</li><li>Пучковая зона</li>
+              <li>Сетчатая зона</li><li>Мозговое вещество</li><li>Синусоидные кровеносные сосуды</li>
+            </ol>
+            <div class="prep-note">Кора ~80% среза (клубочковая → альдостерон, пучковая → кортизол, сетчатая → андрогены), мозговое вещество ~20% — хромаффинные клетки, адреналин/норадреналин.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>Собрано из твоих 42 фото конспекта и атласа · открывай этот файл прямо из папки «гиста» — картинки подгружаются из неё же.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var tabs = document.querySelectorAll('nav.tabs button');
+  var panels = {q: document.getElementById('panel-q'), tem: document.getElementById('panel-tem'), color: document.getElementById('panel-color')};
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabs.forEach(function(b){ b.setAttribute('aria-selected', 'false'); });
+      btn.setAttribute('aria-selected', 'true');
+      Object.keys(panels).forEach(function(k){ panels[k].hidden = (k !== btn.dataset.tab); });
+      window.scrollTo({top:0, behavior:'instant'});
+    });
+  });
+
+  var examTarget = new Date('2026-09-15T16:30:00+03:00');
+  var cd = document.getElementById('countdown');
+  function tick(){
+    var diff = examTarget - new Date();
+    if(diff <= 0){ cd.textContent = 'уже пора'; return; }
+    var h = Math.floor(diff / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    cd.textContent = h + ' ч ' + (m < 10 ? '0' : '') + m + ' мин';
+  }
+  tick();
+  setInterval(tick, 30000);
+})();
+</script>
+</body>
+</html>
